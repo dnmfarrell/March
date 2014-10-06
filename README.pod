@@ -1,0 +1,29 @@
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+March - A 2d web game engine, for turn based games written in Perl
+
+=head1 VERSION
+
+version 0.01
+
+=head2 DESCRIPTION
+
+This is an experiment - a 2d web game engine, for turn based games written in Perl
+
+=head1 AUTHOR
+
+David Farrell <sillymoos@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2014 by David Farrell.
+
+This is free software, licensed under:
+
+  The (two-clause) FreeBSD License
+
+=cut
