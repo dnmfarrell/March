@@ -11,19 +11,13 @@ use List::Util 'any';
 
 sub start ()
 {
-    # configuration
-    my $log = March::Log->instance();
-	$log->msg_print('Starting up');
-
     # begin game loop
     while (1)
     {
-        $log
-        last if $log->msg_exists('Game::End');
+        last;
     }
-	$log->msg_print('Game ending');
-	
-	$log->msg_print('Shutting down');
+
+    1;
 }
 
 1;
@@ -33,7 +27,3 @@ sub start ()
 This is an experiment - a 2d logical game engine for turn based games written in Perl
 
 =cut
-__END__
-game_prep
-turns, phases, actor actions
-game_cleanup
