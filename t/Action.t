@@ -2,23 +2,22 @@ use strict;
 use warnings;
 use Test::More;
 use AnyMQ;
+use March::Msg;
 
 # setup action queue
-my $mq = AnyMQ->topic('March::Action');
+my $mq = AnyMQ->topic('March::Game');
 my $listener = AnyMQ->new_listener($mq);
-my $msg;
-$listener->poll(sub { $msg = $_[0] } );
+my $msg_sent = March::Msg->new(__PACKAGE__, 32, 'Test message');
+my $msg_received;
+$listener->poll(sub { $msg_received = $_[0] } );
 
 # create an object
 my $self = bless {}, 'March::Action';
 
 BEGIN { use_ok 'March::Action' }
 
-ok $self->publish_action({ id => 1, action => 'March::Action'}), 'Publish() msg';
-is $msg->{id}, 1, 'msg id equals 1';
-is $msg->{action}, 'March::Action', 'action equals March::Action';
+ok $self->publish_action($msg_sent), 'Publish() msg';
+is_deeply $msg_received, $msg_sent;
 
 done_testing();
-
-
 

@@ -6,7 +6,7 @@ no warnings 'experimental';
 
 sub publish_action ($self, $msg)
 {
-    AnyMQ->topic(__PACKAGE__)->publish($msg);
+    AnyMQ->topic('March::Game')->publish($msg);
 }
 
 1;

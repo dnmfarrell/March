@@ -1,48 +1,40 @@
 use strict;
 use warnings;
 package March::Log;
-
 use feature qw/signatures say/;
 no warnings 'experimental';
-use List::Util 'any';
+use AnyMQ;
+use March::Game;
 
 my $instance = undef;
-my @msg_queue = ();
 
-sub instance
+sub instance ($class)
 {
-    $instance = bless { fh => undef }, shift unless $instance;
-    return $instance;
-}
-
-sub msg_add ($self, $msg) { push @msg_queue, $msg }
-
-sub msg_delete ($self, $msg)
-{ 
-	for (0..$#msg_queue)
+    unless ($instance)
     {
-        if ($msg_queue[$_] eq $msg)
-        {
-            splice @msg_queue, $_, 1;
-            last;
-        }
+        my $game_queue = AnyMQ->topic('March::Game');
+        my $subscriber = AnyMQ->new_listener($game_queue);
+        $instance = bless { subscriber => $subscriber }, $class;
+
+        # poll for msgs
+        $subscriber->poll(sub { log_msg($_[0]) });
     }
+    $instance;
 }
 
-
-sub msg_exists ($self, $msg_string) { any { /^$msg_string$/ } @msg_queue }
-
-sub msg_print ($self, $msg)
+sub log_msg
 {
-    my $FH = $self->{fh};
+    my $msg = shift;
+    my $config = March::Game->instance->config;
 
-    if ($FH)
+    if (exists $config->{game_filehandle})
     {
-        say $FH $msg;
+        my $FH = $config->{game_filehandle};
+        printf $FH "%-20s %-5d %-65s\n", $msg->{type}, $msg->{actor_id}, $msg->{content};
     }
     else
     {
-        say $msg;
+        printf "%-20s %-5d %-65s\n", $msg->{type}, $msg->{actor_id}, $msg->{content};
     }
 }
 

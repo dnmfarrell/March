@@ -6,27 +6,27 @@ use Math::Shape::Circle;
 use Math::Shape::Vector;
 
 # for listening to actions
-my $action_queue = AnyMQ->topic('March::Action');
-my $action_listener = AnyMQ->new_listener($action_queue);
+my $game_queue = AnyMQ->topic('March::Game');
+my $game_listener = AnyMQ->new_listener($game_queue);
 my $action_msg;
 
-$action_listener->poll(sub { $action_msg = $_[0] } );
+$game_listener->poll(sub { $action_msg = $_[0] } );
 
 BEGIN { use_ok 'March::Unit' }
 
 # constructor, attributes
-my $circle = Math::Shape::Circle->new(10, 10, 2);
-ok my $unit = March::Unit->new(1, 25, $circle), 'constructor';
+my $position = Math::Shape::Vector->new(10, 10);
+ok my $unit = March::Unit->new(1, 25, $position), 'constructor';
 is $unit->id, 1;
-is_deeply $unit->shape, $circle;
+is_deeply $unit->position, $position;
 is $unit->move_allowance, 25;
 
 # moving
 my $target_vector = Math::Shape::Vector->new(10, 20); # 10 north of $unit current position
 ok $unit->move($target_vector);
-is $action_msg->{id}, 1;
-is $action_msg->{action}, 'March::Action::Move';
-is $unit->shape->{center}{x}, 10;
-is $unit->shape->{center}{y}, 20;
+is $action_msg->{actor_id}, 1;
+is $action_msg->{type}, 'March::Action::Move';
+is $unit->position->{x}, 10;
+is $unit->position->{y}, 20;
 
 done_testing();
