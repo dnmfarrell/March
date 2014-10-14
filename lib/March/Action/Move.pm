@@ -1,15 +1,12 @@
 package March::Action::Move;
 use 5.020;
 use Role::Tiny;
-use Role::Tiny::With;
 use Math::Shape::Vector;
 use March::Msg;
 use March::Game;
 use feature 'signatures';
 no warnings 'experimental';
 use Carp;
-
-with 'March::Action';
 
 requires qw/id move_allowance position/;
 
@@ -31,7 +28,7 @@ sub move ($self, $end_vector)
     $self->position($end_vector);
 
     # publish move
-    $self->publish_action(March::Msg->new(__PACKAGE__, $self->id, $end_vector));
+    March::Game->publish(March::Msg->new(__PACKAGE__, $self->id, $end_vector));
 
     # return the distance moved
     $distance;
