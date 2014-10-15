@@ -4,6 +4,7 @@ use Role::Tiny;
 use feature 'signatures';
 no warnings 'experimental';
 use March::Game;
+use March::Msg;
 
 requires 'id';
 
