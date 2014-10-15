@@ -22,7 +22,7 @@ Returns a hashref of config options.
 
 =cut
 
-sub config { { } }
+sub config { $_[0]->{config} }
 
 
 =head2 publish

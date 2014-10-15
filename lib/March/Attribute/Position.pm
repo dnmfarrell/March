@@ -5,7 +5,7 @@ use feature 'signatures';
 no warnings 'experimental';
 use March::Game;
 
-requires qw/id/;
+requires 'id';
 
 sub position ($self, $new_position = 0)
 {
