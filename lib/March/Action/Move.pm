@@ -28,7 +28,7 @@ sub move ($self, $end_vector)
     $self->position($end_vector);
 
     # publish move
-    March::Game->publish(March::Msg->new(__PACKAGE__, $self->id, $end_vector));
+    March::Game->instance->publish(March::Msg->new(__PACKAGE__, $self->id, $end_vector));
 
     # return the distance moved
     $distance;

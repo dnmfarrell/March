@@ -29,7 +29,7 @@ is $self->position->{y}, 90, 'Check position';
 seek $TMP_FH, 0, 0;
 my $tmp_log_content = join "", <$TMP_FH>;
 
-like $tmp_log_content, qr/March::Attribute::Position\s+107/, 'Check direction msg written to game log';
+like $tmp_log_content, qr/March::Attribute::Position\s+107\s+Vector x: 10, y: 90/, 'Check direction msg written to game log';
 
 done_testing();
 
