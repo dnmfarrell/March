@@ -15,7 +15,7 @@ sub position ($self, $new_position = 0)
         $self->{position} = $new_position;
 
         # publish position to game queue
-        March::Game->publish(
+        March::Game->instance->publish(
             March::Msg->new(__PACKAGE__, $self->id, $new_position)
         );
     }

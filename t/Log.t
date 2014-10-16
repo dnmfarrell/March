@@ -6,7 +6,7 @@ use March::Msg;
 use March::Game;
 
 # create a temporary log file
-open my $FH, "+>", undef;
+open my $FH, "+>", undef or die $!;
 
 # set the game log file to the temp FH
 March::Game->instance->{config}{log}{filehandle} = $FH;

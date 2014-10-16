@@ -15,7 +15,7 @@ sub direction ($self, $new_direction = 0)
         $self->{direction} = $new_direction;
 
         # publish direction to game queue
-        March::Game->publish(
+        March::Game->instance->publish(
             March::Msg->new(__PACKAGE__, $self->id, $new_direction)
         );
     }

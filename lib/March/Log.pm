@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package March::Log;
-use feature qw/signatures postderef/;
+use feature qw/signatures/;
 no warnings 'experimental';
 use AnyMQ;
 use March::Game;
@@ -16,7 +16,6 @@ sub instance ($class)
         my $subscriber = AnyMQ->new_listener($game_queue);
         $instance = bless {
             subscriber => $subscriber,
-            msg_cache  => [],
         }, $class;
 
         # poll for msgs
@@ -25,11 +24,10 @@ sub instance ($class)
     $instance;
 }
 
-sub log_msg
+sub log_msg ($msg)
 {
-    my $msg = shift;
-
     my $config = March::Game->instance->config;
+
     if (exists $config->{log}{filehandle})
     {
         my $FH = $config->{log}{filehandle};
