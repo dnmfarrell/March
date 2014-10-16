@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use AnyMQ;
-no warnings 'once';
 use March::Msg;
 use Math::Shape::Vector;
 use March::Log;
@@ -16,11 +15,13 @@ March::Log->instance; # start subscription
 my $self = bless { position => Math::Shape::Vector->new(54, 67) }, 'March::Action::Move';
 
 # add required subs to symbol-table
-*March::Action::Move::id = sub { 20 };
-*March::Action::Move::move_allowance = sub { 100 };
-*March::Action::Move::position
-    = sub { $_[1] ? $_[0]->{position} = $_[1]
-                  : $self->{position} };
+sub March::Action::Move::id { 20 };
+sub March::Action::Move::move_allowance { 100 };
+sub March::Action::Move::position 
+{
+    $_[1] ? $_[0]->{position} = $_[1]
+          : $_[0]->{position}
+};
 
 BEGIN { use_ok 'March::Action::Move' }
 
