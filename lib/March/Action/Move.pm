@@ -8,30 +8,24 @@ use feature 'signatures';
 no warnings 'experimental';
 use Carp;
 
-requires qw/id move_allowance position/;
+requires qw/id position/;
+
+=head2 move
+
+Moves the actor to a new vector requires a L<Math::Shape::Vector> object as an argument. Returns the new vector.
+
+=cut
+
 
 sub move ($self, $end_vector)
 {
     croak 'perform requires a Math::Shape::Vector object'
         unless $end_vector->isa('Math::Shape::Vector');
 
-    my $start_position = $self->position;
-    my $distance = $start_position->distance($end_vector);
-
-    # move allowance
-    return 0 if $distance > $self->move_allowance;
-
-    # collision check
-    return 0 if March::Game->instance->collision_check($start_position, $end_vector);
-
     # update position
     $self->position($end_vector);
 
-    # publish move
-    March::Game->instance->publish(March::Msg->new(__PACKAGE__, $self->id, $end_vector));
-
-    # return the distance moved
-    $distance;
+    $end_vector;
 }
 
 1;
