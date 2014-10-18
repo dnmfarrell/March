@@ -17,7 +17,7 @@ Turns the actor to the direction of the header_vector argument. Requires a L<Mat
 
 sub turn ($self, $header_vector)
 {
-    croak 'perform requires a Math::Shape::Vector object'
+    croak 'turn requires a Math::Shape::Vector object'
         unless $header_vector->isa('Math::Shape::Vector');
 
     # update direction and return it
