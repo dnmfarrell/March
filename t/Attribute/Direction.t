@@ -1,10 +1,9 @@
 use strict;
 use warnings;
-no warnings 'once';
 use Test::More;
-use AnyMQ;
 use Math::Shape::Vector;
 use March::Log;
+use March::Game;
 
 # initialize log with tmp filehandle
 open my $TMP_FH, "+>", undef or die $!;
@@ -15,7 +14,7 @@ March::Log->instance; # start subscription
 my $self = bless { direction => Math::Shape::Vector->new(1, 2) }, 'March::Attribute::Direction';
 
 # add required sub
-*March::Attribute::Direction::id = sub { 107 };
+sub March::Attribute::Direction::id { 107 }
 
 BEGIN { use_ok 'March::Attribute::Direction' }
 

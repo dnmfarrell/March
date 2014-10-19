@@ -22,6 +22,8 @@ sub spawn ($self, $position)
     croak 'object id ' . $self->id . ' already has a position!'
         if $self->position;
 
+    croak 'cannot spawn there' if March::Game->collision_check($position);
+
     # emit msg and set position and return position
     March::Game->instance->publish(
         March::Msg->new(__PACKAGE__, $self->id, $position)
