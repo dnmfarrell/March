@@ -4,13 +4,14 @@ use warnings;
 use feature 'signatures';
 no warnings 'experimental';
 use Carp;
+use Math::Shape::Rectangle;
 
-sub new ($class, $rectangle)
+sub new ($class, $width, $height)
 {
-    croak 'new requires a Math::Shape::Rectangle object'
-        unless $rectangle->isa('Math::Shape::Rectangle');
+    croak 'Tabletop::new requires width and height arguments to be > 0'
+        unless $width > 0 && $height > 0;
 
-    bless { grid => $rectangle }, $class;
+    bless { grid => Math::Shape::Rectangle->new(0,0, $width, $height) }, $class;
 }
 
 =head2 within_bounds
@@ -21,9 +22,6 @@ Checks that the vector is within the bounds of the Tabletop object.
 
 sub within_bounds ($self, $position)
 {
-    croak "__SUB__ requires a Math::Shape::Vector object"
-        unless $position->isa('Math::Shape::Vector');
-
     $self->{grid}->collides($position);
 }
 
