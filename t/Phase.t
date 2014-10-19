@@ -10,12 +10,9 @@ open my $TMP_FH, "+>", undef or die $!;
 March::Game->instance->{config}{log}{filehandle} = $TMP_FH;
 March::Log->instance; # start subscription
 
-# create an object
-my $self = bless { }, 'March::Phase';
-
 BEGIN { use_ok 'March::Phase' }
 
-ok $self->end, 'end() Phase';
+ok March::Phase::end, 'end() Phase';
 
 # slurp the tmp log
 seek $TMP_FH, 0, 0;

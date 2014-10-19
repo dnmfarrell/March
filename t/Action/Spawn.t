@@ -26,7 +26,9 @@ sub March::Action::Spawn::position
 
 BEGIN { use_ok 'March::Action::Spawn' }
 
+is $self->can_spawn, 1, 'Actor can spawn';
 ok $self->spawn( Math::Shape::Vector->new(74, 999) ), 'Spawn to location 74, 999';
+is $self->can_spawn, 0, 'Actor cannot spawn';
 is $self->position->{x}, 74,  'Has spawned to x 74';
 is $self->position->{y}, 999, 'Has spawned to y 999';
 

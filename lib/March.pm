@@ -3,27 +3,19 @@ use warnings;
 package March;
 
 use 5.020;
-use March::Log;
-use List::Util 'any';
+use AnyMQ;
+use feature 'signatures';
+no warnings 'experimental';
+use March::Game;
 
 # ABSTRACT: A 2d logical game engine for turn based games written in Perl
 
-
 sub start ()
 {
-    # begin game loop
-    while (1)
+    while (March::Game->instance->continue)
     {
-        last;
+        March::Game->instance->update;
     }
-
-    1;
 }
 
 1;
-
-=head2 DESCRIPTION
-
-This is an experiment - a 2d logical game engine for turn based games written in Perl
-
-=cut

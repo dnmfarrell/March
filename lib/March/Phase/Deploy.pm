@@ -9,7 +9,7 @@ with 'March::Phase';
 
 sub permitted_actions ($self)
 {
-    my @permitted_actions = qw/spawn/;
+    my @permitted_actions = qw/spawn can_spawn/;
     \@permitted_actions;
 }
 
