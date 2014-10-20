@@ -3,11 +3,13 @@ use warnings;
 use feature 'postderef';
 no warnings 'experimental';
 use Test::More;
+use Test::Exception;
 use March::Actor::Humanoid;
 use March::Phase::Deploy;
 use March::Phase::Move;
+use Math::Trig ':pi';
 
-my $actor = bless { id => 75 }, 'March::Actor::Humanoid';
+my $actor = bless { id => 75, move_allowance => 20 }, 'March::Actor::Humanoid';
 
 BEGIN { use_ok 'March::Game' }
 
@@ -43,11 +45,21 @@ is_deeply $game->current_phase, $move_phase;
 ok $game->next_phase;
 is_deeply $game->current_phase, $deploy_phase;
 
-# orders
+# spawn order
 ok $game->add_actor($actor), 'add_actor';
-my $order = March::Msg->new('spawn', $actor->id, Math::Shape::Vector->new(50, 50));
-AnyMQ->topic('March::Game::Orders')->publish($order);
+my $spawn_order = March::Msg->new('spawn', $actor->id, Math::Shape::Vector->new(50, 50));
+AnyMQ->topic('March::Game::Orders')->publish($spawn_order);
 $game->instance->update;
 is $actor->position->{x}, 50;
 
+# walk order
+my $walk_order = March::Msg->new('walk', $actor->id, Math::Shape::Vector->new(60, 50));
+AnyMQ->topic('March::Game::Orders')->publish($walk_order);
+$game->update;
+is $actor->position->{x}, 50, 'Actor did not move because in Spawn phase';
+ok $game->next_phase,'Change to move phase';
+AnyMQ->topic('March::Game::Orders')->publish($walk_order);
+$game->update;
+is $actor->position->{x}, 60, 'Actor moved because in walk phase';
+is $actor->direction->radians, pip2, 'Actor is facing "east"';
 done_testing();

@@ -1,6 +1,7 @@
 package March::Action::Walk;
 use 5.020;
 use Role::Tiny;
+use Role::Tiny::With;
 use Math::Shape::LineSegment;
 use March::Msg;
 use March::Game;
@@ -8,7 +9,11 @@ use feature 'signatures';
 no warnings 'experimental';
 use Carp;
 
-requires qw/move move_allowance turn/;
+requires qw/move_allowance/;
+
+with qw/March::Action::Move
+        March::Action::Turn
+        /;
 
 =head2 walk
 
@@ -26,7 +31,7 @@ sub walk ($self, $end_vector)
     my $distance = $start_position->distance($end_vector);
 
     # move allowance
-    return 0 if $distance > $self->move_allowance;
+    croak "distance of $distance exceeds move allowance" if $distance > $self->move_allowance;
 
     # collision check
     my $walking_line = Math::Shape::LineSegment->new(
@@ -35,7 +40,7 @@ sub walk ($self, $end_vector)
         $end_vector->{x},
         $end_vector->{y},
     );
-    return 0 if March::Game->instance->collision_check($walking_line);
+    croak "There is a blocking object" if March::Game->instance->collision_check($self, $walking_line);
 
     # turn to face the direction of the walk
     my $new_direction = $end_vector->subtract_vector($start_position)->convert_to_unit_vector;

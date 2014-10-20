@@ -74,15 +74,17 @@ sub update ($self)
 {
     no strict 'refs';
 
+    # execute orders
     for my $order ($self->orders->@*)
     {
-        # execute orders
         if ($self->current_phase->action_is_allowed($order->{type}))
         {
             my $actor = $self->get_actor_by_id($order->{actor_id});
             my $action = $order->{type};
+            say "Action type is $action";
             if ($actor->can($action))
             {
+                say "Actor can $action, calling method";
                 $actor->$action($order->{content});
             }
         }
@@ -205,15 +207,15 @@ sub next_available_id ($self)
 
 =head2 collision_check
 
-Checks an object for collisions - TODO implement ;)
+Checks an object for collisions.
 
 =cut
 
-sub collision_check ($self, $shape)
+sub collision_check ($self, $actor, $shape)
 {
     for ($self->actors->@*)
     {
-        next unless $_->can('position') && $_->position;
+        next unless $_->id != $actor->id && $_->can('position') && $_->position;
         return 1 if $shape->collides($_->position);
     }
     0;
