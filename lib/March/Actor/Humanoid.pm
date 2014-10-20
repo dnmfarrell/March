@@ -7,8 +7,9 @@ with qw/March::Attribute::Id
         March::Attribute::Direction
         March::Attribute::Position
         March::Attribute::MoveAllowance
+        March::Action::Spawn
         March::Action::Turn
-        March::Action::Move
+        March::Action::Walk
       /;
 
 1;

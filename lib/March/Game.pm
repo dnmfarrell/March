@@ -1,6 +1,7 @@
 package March::Game;
 use Role::Tiny;
 use AnyMQ;
+use 5.020;
 use feature qw/signatures postderef/;
 no warnings 'experimental';
 use Carp;
@@ -13,7 +14,7 @@ Returns the singleton March::Game object.
 
 my $instance;
 
-sub instance
+sub instance ($class, $actors = [], $phases = [])
 {
     unless($instance)
     {
@@ -24,7 +25,21 @@ sub instance
             ids           => 0,
             orders        => [],
             continue      => 1,
-        }, shift;
+        }, $class;
+
+        # process actor list
+        foreach my $actor ($actors->@*)
+        {
+            croak unless $actor->DOES('March::Actor');
+            $instance->add_actor($actor);
+        }
+
+        # process phase list
+        foreach my $phase ($phases->@*)
+        {
+            croak unless $phase->DOES('March::Phase');
+            $instance->add_phase($phase);
+        }
 
         # subscribe to the orders queue
         my $listener = AnyMQ->new_listener(AnyMQ->topic('March::Game::Orders'));
@@ -57,12 +72,38 @@ sub clear_orders ($self)
 
 sub update ($self)
 {
-    for ($self->orders->@*)
+    no strict 'refs';
+
+    for my $order ($self->orders->@*)
     {
         # execute orders
-        $self->end if $_->{type} eq 'March::Game::End';
+        if ($self->current_phase->action_is_allowed($order->{type}))
+        {
+            my $actor = $self->get_actor_by_id($order->{actor_id});
+            my $action = $order->{type};
+            if ($actor->can($action))
+            {
+                $actor->$action($order->{content});
+            }
+        }
     }
     $self->clear_orders;
+    $self->end; # if $_->{type} eq 'March::Game::End';
+}
+
+=head2 get_actor_by_id
+
+Returns an actor with the matching id or croaks.
+
+=cut
+
+sub get_actor_by_id ($self, $id)
+{
+    for ($self->{actors}->@*)
+    {
+        return $_ if $_->id == $id;
+    }
+    croak 'No actor with matching id found';
 }
 
 =head2 actors
@@ -153,7 +194,7 @@ sub current_phase ($self)
 
 =head2 next_available_id
 
-Increments and returns the value of theinternal id counter - ids are used to uniquely identify actors.
+Increments and returns the value of the internal id counter - ids are used to uniquely identify actors.
 
 =cut
 
@@ -168,7 +209,15 @@ Checks an object for collisions - TODO implement ;)
 
 =cut
 
-sub collision_check { 0 }
+sub collision_check ($self, $shape)
+{
+    for ($self->actors->@*)
+    {
+        next unless $_->can('position') && $_->position;
+        return 1 if $shape->collides($_->position);
+    }
+    0;
+}
 
 =head2 config
 

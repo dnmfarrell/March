@@ -1,14 +1,18 @@
-use strict;
 use warnings;
 package March;
 
 use 5.020;
-use AnyMQ;
+use March::Game;
 use feature 'signatures';
 no warnings 'experimental';
-use March::Game;
 
 # ABSTRACT: A 2d logical game engine for turn based games written in Perl
+
+=head2 start
+
+Starts the game loop, updating the game every iteration.
+
+=cut
 
 sub start ()
 {
@@ -16,6 +20,7 @@ sub start ()
     {
         March::Game->instance->update;
     }
+    March::Game->instance;
 }
 
 1;

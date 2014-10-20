@@ -1,7 +1,7 @@
 package March::Action::Walk;
 use 5.020;
 use Role::Tiny;
-use Math::Shape::Vector;
+use Math::Shape::LineSegment;
 use March::Msg;
 use March::Game;
 use feature 'signatures';
@@ -29,7 +29,13 @@ sub walk ($self, $end_vector)
     return 0 if $distance > $self->move_allowance;
 
     # collision check
-    return 0 if March::Game->instance->collision_check($start_position, $end_vector);
+    my $walking_line = Math::Shape::LineSegment->new(
+        $start_position->{x},
+        $start_position->{y},
+        $end_vector->{x},
+        $end_vector->{y},
+    );
+    return 0 if March::Game->instance->collision_check($walking_line);
 
     # turn to face the direction of the walk
     my $new_direction = $end_vector->subtract_vector($start_position)->convert_to_unit_vector;

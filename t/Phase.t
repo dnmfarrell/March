@@ -11,8 +11,8 @@ March::Game->instance->{config}{log}{filehandle} = $TMP_FH;
 March::Log->instance; # start subscription
 
 BEGIN { use_ok 'March::Phase' }
-
-ok March::Phase::end, 'end() Phase';
+ok my $phase = March::Phase->new;
+ok $phase->end, 'end() Phase';
 
 # slurp the tmp log
 seek $TMP_FH, 0, 0;
