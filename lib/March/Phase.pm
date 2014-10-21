@@ -15,11 +15,10 @@ sub action_is_allowed ($self, $action)
     grep /$action/, $self->permitted_actions->@*;
 }
 
-sub end ($self)
+sub name ($self)
 {
-    March::Game->instance->publish(
-        March::Msg->new(__PACKAGE__, 0, 'END')
-    );
+    my @name = split(/::/, ref $self);
+    $name[$#name];
 }
 
 1;

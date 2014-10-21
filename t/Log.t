@@ -4,6 +4,14 @@ use Test::More;
 use AnyMQ;
 use March::Msg;
 use March::Game;
+use March::Phase::Deploy;
+use March::Map;
+use March::Actor::Humanoid;
+
+my $deploy_phase = March::Phase::Deploy->new;
+my $human = bless {}, 'March::Actor::Humanoid';
+my $map = March::Map->new(1000, 1000);
+ok my $game = March::Game->instance([$deploy_phase], [$human], $map);
 
 # create a temporary log file
 open my $FH, "+>", undef or die $!;

@@ -3,9 +3,9 @@ use warnings;
 use Test::More;
 use Math::Shape::Vector;
 
-BEGIN { use_ok 'March::Tabletop' }
+BEGIN { use_ok 'March::Map' }
 
-ok my $tabletop = March::Tabletop->new(500, 500);
+ok my $tabletop = March::Map->new(500, 500);
 
 is $tabletop->within_bounds(Math::Shape::Vector->new( 100,  100)), 1;
 is $tabletop->within_bounds(Math::Shape::Vector->new(   0,    0)), 1;

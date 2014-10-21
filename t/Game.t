@@ -7,15 +7,20 @@ use Test::Exception;
 use March::Actor::Humanoid;
 use March::Phase::Deploy;
 use March::Phase::Move;
+use March::Map;
 use Math::Trig ':pi';
 
-my $actor = bless { id => 75, move_allowance => 20 }, 'March::Actor::Humanoid';
 
 BEGIN { use_ok 'March::Game' }
 
-ok my $game = March::Game->instance, 'Singleton Constructor';
+my $deploy_phase = March::Phase::Deploy->new;
+my $move_phase = March::Phase::Move->new;
+my $map = March::Map->new(1000, 1000);
+my $actor = bless { id => 75, move_allowance => 20 }, 'March::Actor::Humanoid';
+ok my $game = March::Game->instance([$deploy_phase, $move_phase], [$actor], $map);
 
 # actors
+ok $game->delete_actor($actor), 'delete_actor';
 is $game->actors->@*, 0, 'Actors list is empty';
 ok $game->add_actor($actor), 'add_actor';
 is $game->actors->@*, 1, 'Actors list has one actor';
@@ -31,10 +36,6 @@ is $game->next_available_id, 4;
 is $game->next_available_id, 5;
 
 # phases
-my $deploy_phase = March::Phase::Deploy->new;
-my $move_phase   = March::Phase::Move->new;
-ok $game->add_phase($deploy_phase), 'Add deployment phase';
-ok $game->add_phase($move_phase), 'Add move phase';
 is_deeply $game->current_phase, $deploy_phase;
 ok $game->next_phase;
 is_deeply $game->current_phase, $move_phase;

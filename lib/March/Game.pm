@@ -2,9 +2,9 @@ package March::Game;
 use Role::Tiny;
 use AnyMQ;
 use 5.020;
+use Carp;
 use feature qw/signatures postderef/;
 no warnings 'experimental';
-use Carp;
 
 =head2 instance
 
@@ -14,7 +14,7 @@ Returns the singleton March::Game object.
 
 my $instance;
 
-sub instance ($class, $actors = [], $phases = [])
+sub instance ($class, $phases = [], $actors = [], $map = 0)
 {
     unless($instance)
     {
@@ -25,19 +25,20 @@ sub instance ($class, $actors = [], $phases = [])
             ids           => 0,
             orders        => [],
             continue      => 1,
+            map           => $map,
         }, $class;
 
         # process actor list
         foreach my $actor ($actors->@*)
         {
-            croak unless $actor->DOES('March::Actor');
+            croak "$actor is not a March::Actor" unless Role::Tiny::does_role($actor, 'March::Actor');
             $instance->add_actor($actor);
         }
 
         # process phase list
         foreach my $phase ($phases->@*)
         {
-            croak unless $phase->DOES('March::Phase');
+            croak "$phase is not a March::Phase" unless Role::Tiny::does_role($phase, 'March::Phase');
             $instance->add_phase($phase);
         }
 
@@ -45,6 +46,16 @@ sub instance ($class, $actors = [], $phases = [])
         my $listener = AnyMQ->new_listener(AnyMQ->topic('March::Game::Orders'));
         $instance->{listener} = $listener;
         $listener->poll(sub { March::Game->instance->add_order($_[0]) });
+
+        # check min requirements met
+        croak 'March::Game requires at least one phase argument'
+            unless scalar $instance->phases->@*;
+
+        croak 'March::Game requires at least one actor argument'
+            unless scalar $instance->actors->@*;
+
+        croak 'March::Game requires a map argument'
+            unless $instance->{map} && $instance->{map}->isa('March::Map');
     }
     $instance;
 }
@@ -81,16 +92,22 @@ sub update ($self)
         {
             my $actor = $self->get_actor_by_id($order->{actor_id});
             my $action = $order->{type};
-            say "Action type is $action";
+
             if ($actor->can($action))
             {
-                say "Actor can $action, calling method";
                 $actor->$action($order->{content});
             }
         }
+        elsif ($order->{type} eq 'March::Phase::Next')
+        {
+            $self->next_phase;
+        }
+        elsif ($order->{type} eq 'March::Game::End')
+        {
+            $self->end;
+        }
     }
     $self->clear_orders;
-    $self->end; # if $_->{type} eq 'March::Game::End';
 }
 
 =head2 get_actor_by_id
@@ -177,9 +194,16 @@ Changes the current phase to the next phase in the phases arrayref. Returns the 
 
 sub next_phase ($self)
 {
+    $self->publish(March::Msg->new(
+            __PACKAGE__, 0, "The " . $self->current_phase->name . "is ending"));
+
     $self->{current_phase} =
         $self->{current_phase} == $self->{phases}->$#*
         ? 0 : $self->{current_phase} + 1;
+
+    $self->publish(March::Msg->new(
+            __PACKAGE__, 0, "The " . $self->current_phase->name . "is starting"));
+
     $self->current_phase;
 }
 
@@ -249,6 +273,11 @@ sub continue ($self)
 sub end ($self)
 {
     $self->{continue} = 0;
+}
+
+sub map ($self)
+{
+    $self->{map};
 }
 
 1;

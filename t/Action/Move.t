@@ -4,7 +4,14 @@ use Test::More;
 use AnyMQ;
 use March::Msg;
 use Math::Shape::Vector;
-use March::Log;
+use March::Actor::Humanoid;
+use March::Map;
+use March::Phase::Deploy;
+
+my $deploy_phase = March::Phase::Deploy->new;
+my $human = bless {}, 'March::Actor::Humanoid';
+my $map = March::Map->new(1000, 1000);
+my $game = March::Game->instance([$deploy_phase], [$human], $map);
 
 # create an object
 my $self = bless { position => Math::Shape::Vector->new(54, 67) }, 'March::Action::Move';

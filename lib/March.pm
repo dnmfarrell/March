@@ -16,11 +16,13 @@ Starts the game loop, updating the game every iteration.
 
 sub start ()
 {
-    while (March::Game->instance->continue)
+    my $game = March::Game->instance;
+
+    while ($game->continue)
     {
-        March::Game->instance->update;
+        $game->update;
     }
-    March::Game->instance;
+    $game;
 }
 
 1;

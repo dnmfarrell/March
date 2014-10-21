@@ -22,6 +22,8 @@ sub move ($self, $end_vector)
     croak 'perform requires a Math::Shape::Vector object'
         unless $end_vector->isa('Math::Shape::Vector');
 
+    croak 'move location not within game map limits' unless March::Game->instance->map->within_bounds($end_vector);
+
     # update position
     $self->position($end_vector);
 

@@ -6,6 +6,14 @@ use Math::Shape::Vector;
 use March::Log;
 use March::Game;
 use Test::Exception;
+use March::Actor::Humanoid;
+use March::Map;
+use March::Phase::Deploy;
+
+my $deploy_phase = March::Phase::Deploy->new;
+my $human = bless { id => 20 }, 'March::Actor::Humanoid';
+my $map = March::Map->new(1000, 1000);
+my $game = March::Game->instance([$deploy_phase], [$human], $map);
 
 # initialize log with tmp filehandle
 open my $TMP_FH, "+>", undef or die $!;
