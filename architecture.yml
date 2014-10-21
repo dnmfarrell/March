@@ -1,0 +1,22 @@
+# a rough architecture for March
+---
+march:
+    - io:
+        - player input
+        - sfx
+        - gxf
+    - game:
+        - phases
+        - turns
+        - collision detection
+        - scenario:
+            - map
+            - players:
+                - name
+                - race / team
+                - human / ai
+            - actors:
+                - landscape
+                - units
+                - zones (e.g. deployment zone)
+            - victory events (max number of turns, wipe out, kill the leader, points scored, hold zone)
