@@ -1,10 +1,9 @@
 # a rough architecture for March
 ---
 march:
-  - io:
-    - player_input
-    - sfx
-    - gxf
+  - interface
+  - sfx
+  - gxf
   - game:
     - TurnManager
     - PlayerManager
