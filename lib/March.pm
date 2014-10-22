@@ -2,7 +2,7 @@ use warnings;
 package March;
 
 use 5.020;
-use March::Game;
+use Carp;
 use feature 'signatures';
 no warnings 'experimental';
 
@@ -14,13 +14,16 @@ Starts the game loop, updating the game every iteration.
 
 =cut
 
-sub start ()
+sub start ($game, $interface = undef, $gfx = undef, $sfx = undef)
 {
-    my $game = March::Game->instance;
+    croak 'start() requires a March::Game object' unless $game->isa('March::Game');
 
     while ($game->continue)
     {
+        $interface->update if $interface;
         $game->update;
+        $gfx->update if $gfx;
+        $sfx->update if $sfx;
     }
     $game;
 }

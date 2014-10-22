@@ -1,17 +1,16 @@
 # a rough architecture for March
 ---
 march:
-  - log
   - io:
     - player_input
     - sfx
     - gxf
   - game:
-    - current_phase
-    - turn_number
-    - active_player
-    - collision_detection
-    - unit_roster
+    - TurnManager
+    - PlayerManager
+    - PhaseManager
+    - CollisionManager
+    - UnitManager
   - signal:
     - game
     - actor
@@ -21,6 +20,9 @@ march:
     - unit
     - building
     - zone
+    - player
+    - scenario
+    - map
   - attribute:
     - id
     - name
@@ -34,24 +36,17 @@ march:
     - alive
     - living
     - moved
+    - shot
+    - fought
   - action:
     - spawn
     - walk
     - shoot
     - fight
     - die
-  - scenario:
-    - name
-    - description
-    - map
-    - resources
-    - end_signals
-    - victory_conditions
-  - player:
-    - name
-    - type (human, AI)
-  - ai
-# how to limit number of actions taken per turn per player
+    - generate_order
+  - log
+
 # how to manage games that allow both players to move in one phase
 # don't require collision resolution in action, let collision system resolve?
-# how to handle dynamic attributes (moved, shot, ran, drunk etc)
+
