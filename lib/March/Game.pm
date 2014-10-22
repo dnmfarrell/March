@@ -14,14 +14,14 @@ Returns the singleton March::Game object.
 
 my $instance;
 
-sub instance ($class, $phases = [], $actors = [], $map = 0)
+sub instance ($class, $phase_mgr = 0, $actors = [], $map = 0)
 {
     unless($instance)
     {
         $instance = bless {
             actors        => [],
-            phases        => [],
-            current_phase => 0,
+            phases        => $phase_mgr,
+            turn          => 0,
             ids           => 0,
             orders        => [],
             continue      => 1,
@@ -35,12 +35,8 @@ sub instance ($class, $phases = [], $actors = [], $map = 0)
             $instance->add_actor($actor);
         }
 
-        # process phase list
-        foreach my $phase ($phases->@*)
-        {
-            croak "$phase is not a March::Phase" unless Role::Tiny::does_role($phase, 'March::Phase');
-            $instance->add_phase($phase);
-        }
+        # phases
+        croak "$phase_mgr is not a March::PhaseManager object" unless $phase_mgr->isa('March::PhaseManager');
 
         # subscribe to the orders queue
         my $listener = AnyMQ->new_listener(AnyMQ->topic('March::Game::Orders'));
@@ -48,9 +44,6 @@ sub instance ($class, $phases = [], $actors = [], $map = 0)
         $listener->poll(sub { March::Game->instance->add_order($_[0]) });
 
         # check min requirements met
-        croak 'March::Game requires at least one phase argument'
-            unless scalar $instance->phases->@*;
-
         croak 'March::Game requires at least one actor argument'
             unless scalar $instance->actors->@*;
 
@@ -161,63 +154,6 @@ sub delete_actor ($self, $actor)
     $self->{actors} = [ grep { $_->id != $actor->id } $self->{actors}->@* ];
     $self;
 }
-
-=head2 phases
-
-Returns an arrayref of phases
-
-=cut
-
-sub phases ($self)
-{
-    $self->{phases};
-}
-
-=head2 add_phase
-
-Adds a phase to the end of the phase array, returns an arrayref of phases.
-
-=cut
-
-sub add_phase ($self, $phase)
-{
-    croak 'add_phase method requires a March::Phase class' unless Role::Tiny::does_role($phase, 'March::Phase');
-    push $self->{phases}->@*, $phase;
-    $self->phases;
-}
-
-=head2 next_phase
-
-Changes the current phase to the next phase in the phases arrayref. Returns the current L<March::Phase> object.
-
-=cut
-
-sub next_phase ($self)
-{
-    $self->publish(March::Msg->new(
-            __PACKAGE__, 0, "The " . $self->current_phase->name . "is ending"));
-
-    $self->{current_phase} =
-        $self->{current_phase} == $self->{phases}->$#*
-        ? 0 : $self->{current_phase} + 1;
-
-    $self->publish(March::Msg->new(
-            __PACKAGE__, 0, "The " . $self->current_phase->name . "is starting"));
-
-    $self->current_phase;
-}
-
-=head2 current_phase
-
-Returns the current phase object
-
-=cut
-
-sub current_phase ($self)
-{
-    $self->phases->[$self->{current_phase}];
-}
-
 =head2 next_available_id
 
 Increments and returns the value of the internal id counter - ids are used to uniquely identify actors.
