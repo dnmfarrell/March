@@ -23,6 +23,7 @@ march:
     - player
     - scenario
     - map
+    - phase
   - attribute:
     - id
     - name
@@ -38,9 +39,12 @@ march:
     - value
     - alive
     - living
+    - charged
     - moved
     - shot
     - fought
+    - rectangle
+    - circle
   - action:
     - spawn
     - walk
@@ -49,6 +53,5 @@ march:
     - die
     - create_order
 
-# how to manage games that allow both players to move in one phase
 # don't require collision resolution in action, let collision system resolve?
 

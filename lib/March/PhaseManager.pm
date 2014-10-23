@@ -7,12 +7,29 @@ use AnyMQ;
 use March::Msg;
 use Carp;
 
+my $instance;
+
 sub new ($class)
 {
-    bless {
+    my $listener = AnyMQ->new_listener(AnyMQ->topic('March::Signal::Game'));
+    $listener->poll( sub { March::PhaseManager->instance->process_signal($_[0]) } );
+
+    $instance = bless
+    {
         phases        => [],
         current_phase => 0,
+        listener      => $listener,
     }, $class;
+}
+
+sub instance () { $instance }
+
+sub process_signal($self, $signal)
+{
+    if ($signal->{type} eq 'March::Signal::Game::Phase::Next')
+    {
+        $self->next_phase;
+    }
 }
 
 
@@ -35,7 +52,7 @@ Adds a phase to the end of the phase array, returns an arrayref of phases.
 
 sub add_phase ($self, $phase)
 {
-    croak 'add_phase method requires a March::Phase class' unless Role::Tiny::does_role($phase, 'March::Phase');
+    croak 'add_phase method requires a March::Actor::Phase object' unless $phase->DOES('March::Actor::Phase');
     push $self->{phases}->@*, $phase;
     $self->phases;
 }
@@ -48,22 +65,21 @@ Changes the current phase to the next phase in the phases arrayref. Returns the 
 
 sub next_phase ($self)
 {
-    AnyMQ->topic('March::Game')->publish(March::Msg->new(
+    AnyMQ->topic('March::Signal::Game')->publish(March::Msg->new(
             __PACKAGE__, 0, "The " . $self->current_phase->name . "is ending"));
 
     $self->{current_phase} =
         $self->{current_phase} == $self->{phases}->$#*
         ? 0 : $self->{current_phase} + 1;
 
-    # end turn 
+    # end turn
     unless ($self->{current_phase})
     {
-        AnyMQ->topic('March::Game')->publish(March::Msg->new(
-            'March::Game::Turn::End', 0, "The turn is ending"));
+        AnyMQ->topic('March::Signal::Game')->publish(March::Msg->new(
+            'March::Signal::Game::Turn::End', 0, "The turn is ending"));
     }
 
-
-    AnyMQ->topic('March::Game')->publish(March::Msg->new(
+    AnyMQ->topic('March::Signal::Game')->publish(March::Msg->new(
             __PACKAGE__, 0, "The " . $self->current_phase->name . "is starting"));
 
     $self->current_phase;

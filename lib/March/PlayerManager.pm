@@ -15,7 +15,7 @@ sub new ($class, $players)
         croak 'non March::Actor::Player object passed to ' . __PACKAGE__
             unless $_->DOES->('March::Actor::Player');
     }
-    
+
     my $listener = AnyMQ->new_listener(AnyMQ->topic('March::Signal::Game'));
     $listener->poll( sub { 
         if ($_->{type} eq 'March::Signal::Game::Player::next')
@@ -40,7 +40,7 @@ sub players ($self)
 
 sub next_player ($self)
 {
-    $self->{current_player_idx} == $self->{players}->$# 
+    $self->{current_player_idx} == $self->{players}->$#*
         ? $self->{current_player_idx} = 0
         : $self->{current_player_idx}++;
 }

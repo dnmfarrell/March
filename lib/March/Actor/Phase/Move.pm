@@ -1,11 +1,10 @@
-package March::Phase::Move;
+package March::Actor::Phase::Move;
 use 5.020;
 use Role::Tiny::With;
 use feature 'signatures';
 no warnings 'experimental';
 
-#import end()
-with 'March::Phase';
+with 'March::Actor::Phase';
 
 sub permitted_actions ($self)
 {

@@ -1,10 +1,10 @@
-package March::Phase::Deploy;
+package March::Actor::Phase::Deploy;
 use 5.020;
 use Role::Tiny::With;
 use feature 'signatures';
 no warnings 'experimental';
 
-with 'March::Phase';
+with 'March::Actor::Phase';
 
 sub permitted_actions ($self)
 {
