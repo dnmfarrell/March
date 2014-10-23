@@ -1,12 +1,14 @@
-package March::Action::Spawn;
+package March::Component::Spawn;
 use Role::Tiny;
+use Role::Tiny::With;
 use feature 'signatures';
 no warnings 'experimental';
 use Carp;
-use March::Game;
+use March::ConfigManager;
 use March::Msg;
 
-requires qw/id position/;
+with qw/March::Component::Id
+        March::Component::Position/;
 
 =head2 can_spawn
 
@@ -36,8 +38,8 @@ sub spawn ($self, $position)
     croak 'cannot spawn there' if March::Game->instance->collision_check($self, $position);
 
     # emit msg and set position and return position
-    March::Game->instance->publish(
-        March::Msg->new(__PACKAGE__, $self->id, $position)
+    March::ConfigManager->instance->publish(
+        March::Msg->new(__PACKAGE__, $position, $self->id)
     );
     $self->position($position);
 }

@@ -1,4 +1,4 @@
-package March::Attribute::MoveAllowance;
+package March::Component::Move::Allowance;
 use 5.020;
 use Role::Tiny;
 use feature 'signatures';

@@ -1,4 +1,4 @@
-package March::Action::Move;
+package March::Component::Move;
 use 5.020;
 use Role::Tiny;
 use Math::Shape::Vector;
@@ -8,14 +8,14 @@ use feature 'signatures';
 no warnings 'experimental';
 use Carp;
 
-requires qw/id position/;
+with qw/March::Component::Id
+        March::Component::Position/;
 
 =head2 move
 
 Moves the actor to a new vector requires a L<Math::Shape::Vector> object as an argument. Returns the new vector.
 
 =cut
-
 
 sub move ($self, $end_vector)
 {

@@ -1,8 +1,8 @@
 package March::Actor;
-use Role::Tiny;
+use Role::Tiny::With;
+use Role::Tiny
 
 # every actor must have an id
-
-requires 'id';
+with 'March::Component::Id';
 
 1;

@@ -5,18 +5,15 @@ march:
   - sfx
   - gfx
   - log
-  - game:
-    - ConfigManager
-    - TurnManager
-    - PlayerManager
-    - PhaseManager
-    - CollisionManager
-    - UnitManager
-    - OrderManager
-  - message:
-    - game
-    - actor
-    - order
+  - game
+  - ConfigManager
+  - TurnManager
+  - PlayerManager
+  - PhaseManager
+  - CollisionManager
+  - UnitManager
+  - OrderManager
+  - msg
   - actor:
     - weapon
     - unit
@@ -26,7 +23,7 @@ march:
     - scenario
     - map
     - phase
-  - attribute:
+  - Component:
     - id
     - name
     - ai
@@ -47,7 +44,6 @@ march:
     - fought
     - rectangle
     - circle
-  - action:
     - spawn
     - walk
     - shoot

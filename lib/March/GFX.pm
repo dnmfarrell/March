@@ -1,10 +1,11 @@
 package March::GFX;
 use 5.020;
 use warnings;
-use AnyMQ;
 use Role::Tiny;
 use feature qw/signatures postderef/;
 no warnings 'experimental';
+use March::ConfigManager;
+use March::Game;
 
 requires qw/draw/;
 
@@ -12,40 +13,32 @@ $instance;
 
 sub new ($class)
 { 
-    my $game_channel = AnyMQ->new_listener(AnyMQ->topic('March::Signal::Game'));
-    $game_channel->poll(sub { process_signal($_[0]) });
-    
-    my $order_channel = AnyMQ->new_listener(AnyMQ->topic('March::Signal::Order'));
-    $order_channel->poll(sub { process_signal($_[0]) });
-    
-    my $actor_channel = AnyMQ->new_listener(AnyMQ->topic('March::Signal::Actor'));
-    $actor_channel->poll(sub { process_signal($_[0]) });
+    my $listener = March::ConfigManager->instance->create_listener;
+    $listener->poll(sub { process_message($_[0]) });
     
     $instance = bless { 
-        game_channel  => $game_channel,
-        order_channel => $order_channel,
-        actor_channel => $actor_channel,
-        signals       => [],
+        listener  => $listener,
+        messages  => [],
     }, $class;
 }
 
 sub instance () { $instance }
 
-sub process_signal ($signal){ push March::SFX->instance->{signals}->@*, $signal }
+sub process_message ($message){ push March::SFX->instance->{messages}->@*, $message }
 
 =head2 update
 
-Loops through every signal received and calls play_sound() method passing the signal as an argument.
+Loops through every message received and calls draw() method passing the message as an argument.
 
 =cut
 
 sub update ($self)
 {
-    for ($self->{signals}->@*)
+    for ($self->{messages}->@*)
     {
         $self->draw($_);
     }
-    $self->{signals} = [];
+    $self->{messages} = [];
 }
 
 1;

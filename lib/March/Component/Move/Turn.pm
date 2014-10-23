@@ -1,4 +1,4 @@
-package March::Action::Turn;
+package March::Component::Move::Turn;
 use 5.020;
 use Role::Tiny;
 use March::Msg;

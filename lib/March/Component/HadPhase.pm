@@ -1,4 +1,4 @@
-package March::Attribute::HadPhase;
+package March::Component::HadPhase;
 use 5.020;
 use Role::Tiny;
 use feature 'signatures';

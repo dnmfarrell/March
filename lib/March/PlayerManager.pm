@@ -1,7 +1,9 @@
 package March::PlayerManager;
-use AnyMQ;
+use Role::Tiny;
 use feature qw/signatures postderef/;
 no warnings 'experimental';
+use March::ConfigManager;
+use March::Msg;
 use Carp;
 
 my $instance;
@@ -16,13 +18,8 @@ sub new ($class, $players)
             unless $_->DOES->('March::Actor::Player');
     }
 
-    my $listener = AnyMQ->new_listener(AnyMQ->topic('March::Signal::Game'));
-    $listener->poll( sub { 
-        if ($_->{type} eq 'March::Signal::Game::Player::next')
-        {
-            March::PlayerManager->instance->next_player;
-        }
-    });
+    my $listener = March::ConfigManager->instance->create_listener;
+    $listener->poll(sub { process_message($_[0]) });
     
     $instance = bless {
         current_player_idx => 0,
@@ -31,6 +28,14 @@ sub new ($class, $players)
     }, $class;
     
     $instance;
+}
+
+sub process_msg ($msg)
+{
+    if ($msg->type eq 'March::Actor::Player::Next')
+    {
+        March::PlayerManager->instance->next_player;
+    }
 }
 
 sub players ($self)

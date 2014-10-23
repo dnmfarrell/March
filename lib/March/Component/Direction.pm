@@ -1,12 +1,12 @@
-package March::Attribute::Direction;
+package March::Component::Direction;
 use 5.020;
 use Role::Tiny;
 use feature 'signatures';
 no warnings 'experimental';
-use March::Game;
+use March::ConfigManager;
 use March::Msg;
 
-requires 'id';
+with 'March::Component::Id';
 
 sub direction ($self, $new_direction = 0)
 {
@@ -15,11 +15,11 @@ sub direction ($self, $new_direction = 0)
         $self->{direction} = $new_direction;
 
         # publish direction to game queue
-        March::Game->instance->publish(
-            March::Msg->new(__PACKAGE__, $self->id, $new_direction)
+        March::ConfigManager->instance->publish(
+            March::Msg->new(__PACKAGE__, $new_direction, $self->id)
         );
     }
-    $self->{direction};
+    $self->{direction}
 }
 
 1;

@@ -1,4 +1,4 @@
-package March::Action::Walk;
+package March::Component::Move::Walk;
 use 5.020;
 use Role::Tiny;
 use Role::Tiny::With;

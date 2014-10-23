@@ -1,4 +1,4 @@
-package March::Attribute::Rectangle;
+package March::Component::Shape::Rectangle;
 use Role::Tiny;
 use Role::Tiny::With;
 use Math::Shape::Rectangle;

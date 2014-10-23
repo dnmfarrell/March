@@ -1,4 +1,4 @@
-package March::Attribute::Circle;
+package March::Component::Shape::Circle;
 use Role::Tiny;
 use Role::Tiny::With;
 use Math::Shape::Circle;

@@ -1,4 +1,4 @@
-package March::Attribute::HadTurn;
+package March::Component::HadTurn;
 use 5.020;
 use Role::Tiny;
 use feature 'signatures';

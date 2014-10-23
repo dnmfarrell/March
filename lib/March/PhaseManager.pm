@@ -3,7 +3,7 @@ use 5.020;
 use Role::Tiny;
 use feature qw/signatures postderef/;
 no warnings 'experimental';
-use AnyMQ;
+use March::ConfigManager;
 use March::Msg;
 use Carp;
 
@@ -11,27 +11,24 @@ my $instance;
 
 sub new ($class)
 {
-    my $listener = AnyMQ->new_listener(AnyMQ->topic('March::Signal::Game'));
-    $listener->poll( sub { March::PhaseManager->instance->process_signal($_[0]) } );
-
-    $instance = bless
-    {
-        phases        => [],
-        current_phase => 0,
-        listener      => $listener,
+    my $listener = March::ConfigManager->instance->create_listener;
+    $listener->poll(sub { process_message($_[0]) });
+    
+    $instance = bless { 
+        listener  => $listener,
+        phases    => [],
     }, $class;
 }
 
 sub instance () { $instance }
 
-sub process_signal($self, $signal)
+sub process_messagel($message)
 {
-    if ($signal->{type} eq 'March::Signal::Game::Phase::Next')
+    if ($message->type eq 'March::Actor::Phase::Next')
     {
-        $self->next_phase;
+        March::PhaseManager->instance->next_phase;
     }
 }
-
 
 =head2 phases
 
@@ -65,9 +62,10 @@ Changes the current phase to the next phase in the phases arrayref. Returns the 
 
 sub next_phase ($self)
 {
-    AnyMQ->topic('March::Signal::Game')->publish(March::Msg->new(
-            __PACKAGE__, 0, "The " . $self->current_phase->name . "is ending"));
-
+    March::ConfigManager->instance->publish(March::Msg->new(
+            __PACKAGE__, "The " . $self->current_phase->name . "is ending", 0)
+    );
+    
     $self->{current_phase} =
         $self->{current_phase} == $self->{phases}->$#*
         ? 0 : $self->{current_phase} + 1;
@@ -75,13 +73,15 @@ sub next_phase ($self)
     # end turn
     unless ($self->{current_phase})
     {
-        AnyMQ->topic('March::Signal::Game')->publish(March::Msg->new(
-            'March::Signal::Game::Turn::End', 0, "The turn is ending"));
+        March::ConfigManager->instance->publish(March::Msg->new(
+            'March::Actor::Turn::End', undef, 0)
+        );
     }
 
-    AnyMQ->topic('March::Signal::Game')->publish(March::Msg->new(
-            __PACKAGE__, 0, "The " . $self->current_phase->name . "is starting"));
-
+    March::ConfigManager->instance->publish(March::Msg->new(
+        __PACKAGE__, "The " . $self->current_phase->name . "is starting", 0)
+    );
+    
     $self->current_phase;
 }
 

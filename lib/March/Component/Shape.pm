@@ -1,4 +1,4 @@
-package March::Attribute::Shape;
+package March::Component::Shape;
 use Role::Tiny;
 
 requires 'shape';
