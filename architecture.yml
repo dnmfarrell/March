@@ -3,7 +3,8 @@
 march:
   - interface
   - sfx
-  - gxf
+  - gfx
+  - log
   - game:
     - TurnManager
     - PlayerManager
@@ -25,6 +26,9 @@ march:
   - attribute:
     - id
     - name
+    - ai
+    - had_turn
+    - had_phase
     - body
     - group
     - movement_allowance
@@ -43,8 +47,7 @@ march:
     - shoot
     - fight
     - die
-    - generate_order
-  - log
+    - create_order
 
 # how to manage games that allow both players to move in one phase
 # don't require collision resolution in action, let collision system resolve?
