@@ -6,12 +6,14 @@ march:
   - gfx
   - log
   - game:
+    - ConfigManager
     - TurnManager
     - PlayerManager
     - PhaseManager
     - CollisionManager
     - UnitManager
-  - signal:
+    - OrderManager
+  - message:
     - game
     - actor
     - order
