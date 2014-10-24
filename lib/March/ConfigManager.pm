@@ -10,12 +10,12 @@ my $instance;
 sub new ($class)
 {
     my $mq = AnyMQ->topic('March::Message::Queue');
-    $instance = {
+    $instance = bless {
         mq  => $mq,
-    }, bless $class;
+    },  $class;
 }
 
-sub instance () { $instance }
+sub instance ($class) { $instance }
 
 sub mq ($self)
 {
