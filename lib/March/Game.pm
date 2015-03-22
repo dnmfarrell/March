@@ -6,6 +6,9 @@ use Carp;
 use feature qw/signatures postderef/;
 no warnings 'experimental';
 
+1;
+
+__END__
 =head2 instance
 
 Returns the singleton March::Game object.

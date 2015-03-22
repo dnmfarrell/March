@@ -4,23 +4,19 @@
 
 =head1 NAME
 
-March - A 2d web game engine, for turn based games written in Perl
+March - This is an experiment - a 2d game engine, for turn based games written in Perl using the Entity-Component pattern.
 
 =head1 VERSION
 
 version 0.01
 
-=head2 DESCRIPTION
-
-This is an experiment - a 2d web game engine, for turn based games written in Perl
-
 =head1 AUTHOR
 
-David Farrell <sillymoos@cpan.org>
+David Farrell <dfarrell@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2014 by David Farrell.
+This software is Copyright (c) 2015 by David Farrell.
 
 This is free software, licensed under:
 

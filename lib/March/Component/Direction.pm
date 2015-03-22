@@ -3,10 +3,16 @@ use 5.020;
 use Role::Tiny;
 use feature 'signatures';
 no warnings 'experimental';
-use March::ConfigManager;
-use March::Msg;
 
-with 'March::Component::Id';
+with qw/March::Component::Id March::Component::PostMsgQueue/;
+
+=head2 direction()
+
+=head2 direction($direction)
+
+Getter / Setter method for an entities direction, which is a Math::Shape::Vector object.
+
+=cut
 
 sub direction ($self, $new_direction = 0)
 {
@@ -15,9 +21,9 @@ sub direction ($self, $new_direction = 0)
         $self->{direction} = $new_direction;
 
         # publish direction to game queue
-        March::ConfigManager->instance->publish(
-            March::Msg->new(__PACKAGE__, $new_direction, $self->id)
-        );
+        $self->post($new_direction, $self->id);
+        $self->post('March::Logger',
+          sprintf "Entity %s changed direction to face $new_direction", $self->id);
     }
     $self->{direction}
 }

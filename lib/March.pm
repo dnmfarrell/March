@@ -1,21 +1,18 @@
-use warnings;
 package March;
 
 use 5.020;
+use warnings;
+
+# ABSTRACT: This is an experiment - a 2d game engine, for turn based games written in Perl using the Entity-Component pattern.
+
+1;
+__END__
 use Carp;
 use feature 'signatures';
 no warnings 'experimental';
 use March::Manager;
 use March::Msg;
 use AnyMQ;
-
-# ABSTRACT: A 2d logical game engine for turn based games written in Perl
-
-=head2 start
-
-Starts the game loop, updating the game every iteration.
-
-=cut
 
 sub start ()
 {
