@@ -1,31 +1,37 @@
-package March::Component::PollMsgQueue;
+package March::Component::MsgQueue;
 use 5.020;
 use warnings;
 use AnyMQ;
 use Role::Tiny;
-use Role::Tiny::With;
 use Scalar::Util 'blessed';
 use feature 'signatures';
 no warnings 'experimental';
 
 requires 'process_msg';
-with 'March::Component::PostMsgQueue';
 
-=head2 poll ()
+=head2 post ($queue, $msg)
 
-=head2 poll ($queue)
-
-Will poll the C<$queue> arg provided (just the queue name) for messages and call C<process_msg> for each message received. Must be called as an object method. If called without C<$queue>, will poll the queue of it's own class name.
+Will post a message to the message queue (just the queue name as a string).
 
 =cut
 
-sub poll ($self, $queue = undef)
+sub post ($self, $queue, $msg)
+{
+  die 'post must be called as an object method' unless blessed $self;
+  AnyMQ->topic($queue)->publish($msg);
+}
+
+
+=head2 poll ($queue)
+
+Will poll the C<$queue> arg provided (just the queue name) for messages and call C<process_msg> for each message received. Must be called as an object method.
+
+=cut
+
+sub poll ($self, $queue)
 {
   my $class = blessed $self;
-
   die 'poll must be called as an object method' unless $class;
-
-  $queue = $class unless $queue;
 
   unless (exists $self->{msg_queues}{$queue})
   {
@@ -37,3 +43,4 @@ sub poll ($self, $queue = undef)
 }
 
 1;
+

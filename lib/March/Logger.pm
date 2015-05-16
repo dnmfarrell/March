@@ -6,7 +6,7 @@ use feature 'signatures';
 no warnings 'experimental';
 use Time::Piece;
 
-with 'March::Component::PollMsgQueue';
+with 'March::Component::MsgQueue';
 
 =head2 new()
 
@@ -22,7 +22,6 @@ sub new ($class, $fh_log = *main::STDOUT)
     log_filehandle => $fh_log,
   }, $class;
 }
-
 
 =head2 process_msg ($msg)
 

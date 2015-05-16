@@ -1,10 +1,11 @@
 package March::Component::Direction;
 use 5.020;
 use Role::Tiny;
+use Role::Tiny::With;
 use feature 'signatures';
 no warnings 'experimental';
 
-with qw/March::Component::Id March::Component::PostMsgQueue/;
+with qw/March::Component::Id March::Component::MsgQueue/;
 
 =head2 direction()
 
@@ -25,7 +26,9 @@ sub direction ($self, $new_direction = 0)
         $self->post('March::Logger',
           sprintf "Entity %s changed direction to face $new_direction", $self->id);
     }
-    $self->{direction}
+    $self->{direction};
 }
+
+sub process_msg {} # required by MsqQueue
 
 1;
