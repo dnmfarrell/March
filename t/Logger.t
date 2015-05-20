@@ -2,9 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use Role::Tiny::With;
-with 'March::Component::MsgQueue';
-
-sub process_msg {} # required by MsgQueue role
+with 'March::Component::PostMsg';
 
 BEGIN { use_ok 'March::Logger' }
 

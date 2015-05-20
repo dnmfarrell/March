@@ -6,7 +6,7 @@ use feature 'signatures';
 no warnings 'experimental';
 use Time::Piece;
 
-with 'March::Component::MsgQueue';
+with qw/March::Component::MsgQueue March::Component::PostMsg/;
 
 =head2 new()
 

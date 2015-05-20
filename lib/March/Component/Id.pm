@@ -3,10 +3,15 @@ use 5.020;
 use Role::Tiny;
 use feature 'signatures';
 no warnings 'experimental';
+use Data::UUID;
 
-sub id ($self, $id = 0)
+sub id ($self)
 {
-    $id ? $self->{id} : $self->{id} = $id;
+    unless (exists $self->{id})
+    {
+      $self->{id} = Data::UUID->new->create_str;
+    }
+    $self->{id};
 }
 
 1;

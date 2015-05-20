@@ -11,29 +11,26 @@ This class is a factory for creating entity classes.
 
 =cut
 
-=head2 mint_class ($class, [$components])
+=head2 mint_class ( $class, @components )
 
-Mints a new class composed with the roles in C<$components>, which must be an arrayref of L<March::Component> names.
+Mints a new class composed with the roles in C<@components>, which must be an array of L<March::Component> names.
 
 =cut
 
-sub mint_class ($self, $class, $components)
+sub mint_class ($self, $class, @components)
 {
-  die 'mint_class must be called with an arrayref of March::Components' unless ref $components eq 'ARRAY';
-  Role::Tiny->create_class_with_roles($class, @$components);
+  Role::Tiny->create_class_with_roles($class, @components);
 }
 
-=head2 mint_object ($class, [$components])
+=head2 mint_object ( @components )
 
-Mints a new object composed with the roles in C<$components>, which must be an arrayref of L<March::Component> names.
+Mints a new object composed with the roles in C<@components>, which must be an array of L<March::Component> names.
 
 =cut
 
-sub mint_object ($self, $class, $components)
+sub mint_object ($self, @components)
 {
-  die 'mint_object must be called with an arrayref of March::Components' unless ref $components eq 'ARRAY';
-  my $composed_class = Role::Tiny->create_class_with_roles($class, @$components);
-  bless {}, $composed_class;
+  bless {}, $self->mint_class('March::Entity', @components);
 }
 
 1;
